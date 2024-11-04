@@ -95,7 +95,17 @@ var app = new Vue({
             }
         ],
         cart: [],
-        showProduct: true
+        showProduct: true,
+        order: {
+            firstName: '',
+            lastName: '',
+            address: '',
+            city: '',
+            state: '',
+            zip: null,
+            phone: '',
+            gift: false
+        }
     },
     computed: {
         cartItemCount() {
@@ -124,6 +134,20 @@ var app = new Vue({
             if (index !== -1) {
                 this.cart.splice(index, 1);
             }
+        },
+        submitForm(){
+            alert('Order placed successfully!');
+            this.cart = [];
+            this.order = {
+                firsName: '',
+                lastName: '',
+                address: '',
+                city: '',
+                zip: null,
+                phone: '',
+                gift: false
+            };
+            this.showProduct = true;
         }
     }
 });

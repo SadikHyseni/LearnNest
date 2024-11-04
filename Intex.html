@@ -29,7 +29,6 @@
                         <p v-text="lesson.description"></p>
                         <p>Location: {{ lesson.location }}</p>
                         <p>Price: ${{ lesson.price }}</p>
-=
                         <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)">Add to cart</button>
                         <button disabled v-else>Add to cart</button>
                     </div>
@@ -45,6 +44,46 @@
                         </li>
                     </ul>
                     <p>Total: ${{ cartTotal }}</p>
+
+                    <form @submit.prevent="submitForm">
+                    <p><strong>First Name:</Strong> <input v-model.trim="order.firstName" required
+                        pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{1,50}$"
+                        title="Please enter a valid first name (letters only, up to 50 characters)"/>
+                    </p>
+                    <p><strong>Last Name:</strong> <input v-model.trim="order.lastname" required
+                        pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{1,50}$"
+                        title="Please enter a valid first name (letters only, up to 50 characters)"/>
+                    </p>
+                    <p><strong>Email:</strong> 
+                        <input v-model.trim="order.email" type="email" required
+                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                        title="Please enter a valid email address (e.g., user@example.com)"/>
+                     </p>
+                    <p><strong>Address:</strong> <input v-model="order.address" required
+                        pattern="^[A-Za-z0-9À-ÖØ-öø-ÿ\s,.'-]{5,100}$"
+                        title="Please enter a valid address (letters, numbers, commas, and periods allowed, between 5 and 100 characters)"/>
+                    </p>
+                    <p><strong>City:</strong> <input v-model="order.city" required
+                        pattern="^[A-Za-z0-9À-ÖØ-öø-ÿ\s,.'-]{5,100}$"
+                        title="Please enter a valid address (letters, numbers, commas, and periods allowed, between 5 and 100 characters)"/>
+                    </p>
+                    <p><strong>Postcode:</strong> 
+                        <input v-model.trim="order.postcode" type="text" required
+                        pattern="^([A-Za-z]{1,2}\d{1,2}[A-Za-z]?)\s?(\d[A-Za-z]{2})$"
+                        title="Please enter a valid UK postcode (e.g., SW1A 1AA)"/>
+                     </p>
+                    <p><strong>Phone Number:</strong> 
+                        <input v-model="order.phone" type="tel" required
+                        pattern="^(\+44\s?7\d{3}|\(?0\)?7\d{3})\s?\d{3}\s?\d{3}$"
+                        title="Please enter a valid UK phone number (e.g., 07123 456 789 or +44 7123 456 789)" />
+                    </p>
+                    <p><input type="checkbox" id="gift" v-model="order.gift"/>
+                     <label for="gift">{{ order.gift ? 'Send as a gift' : 'Don\'t send as a gift' }}</label>
+                    </p>
+
+                    <button type="submit">Place order</button>
+                    </form>
+
                     <button @click="showCheckout">Back to Product</button>
                 </div>
             </main>
