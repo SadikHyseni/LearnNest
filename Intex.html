@@ -4,23 +4,49 @@
     <meta charset="UTF-8">
     <title>LearnNest</title>
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     </head>
     <body>
         <div id="app">
             <header>
                 <h1 v-text="LearnNest"></h1>
+                <button @click="showCheckout">
+                    {{ cartItemCount }}
+                    <span class="fas fa-cart-plus"></span> Checkout
+                </button>
             </header>
+            
+
             <main>
-                <p>Welcome to the After School Class!</p>
-
-                <figure>
-                    <img v-bind:src="lesson.image" alt="Leson Image">
-                </figure>
-                <h2>{{ lesson.title }}</h2>
-                <p>{{ lesson.description }}</p>
-                <p>Location: {{ lesson.location }} </p>
-                <p>Price: ${{ lesson.price }}</p>
-
+                <div v-if="showProduct">
+                    <p>Welcome to the After School Class!</p>
+                    
+                    <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+                        <figure>
+                            <img v-bind:src="lesson.image" alt="Lesson Image">
+                        </figure>
+                        <h2 v-text="lesson.title"></h2>
+                        <p v-text="lesson.description"></p>
+                        <p>Location: {{ lesson.location }}</p>
+                        <p>Price: ${{ lesson.price }}</p>
+=
+                        <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)">Add to cart</button>
+                        <button disabled v-else>Add to cart</button>
+                    </div>
+                </div>
+    
+                <div v-else>
+                    <h2>Checkout</h2>
+                    <p>Items in your cart:</p>
+                    <ul>
+                        <li v-for="item in cart" :key="item.id">
+                            {{ item.title }} - ${{ item.price }}
+                            <button @click="removeFromCart(item)">Remove</button>
+                        </li>
+                    </ul>
+                    <p>Total: ${{ cartTotal }}</p>
+                    <button @click="showCheckout">Back to Product</button>
+                </div>
             </main>
         </div>
         <script src="js/app.js"></script>
