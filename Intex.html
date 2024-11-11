@@ -1,4 +1,4 @@
-<!DOCTYPE htlm>
+<!DOCTYPE html>
 <html lang="en">
     <head>
     <meta charset="UTF-8">
@@ -6,11 +6,12 @@
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     </head>
+    
     <body>
         <div id="app">
             <header>
-                <h1 v-text="LearnNest"></h1>
-                <button @click="showCheckout">
+                <h1 v-text="appName"></h1>
+                <button @click="showCheckout" :disabled="!isCartButtonDisabled">
                     {{ cartItemCount }}
                     <span class="fas fa-cart-plus"></span> Checkout
                 </button>
@@ -19,16 +20,45 @@
 
             <main>
                 <div v-if="showProduct">
-                    <p>Welcome to the After School Class!</p>
+                    <p>Welcome to LearnNest!</p>
                     
-                    <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+                    <div>
+                        <label>Sort by:
+                            <select v-model="sortAttribute">
+                                <option value="title">Subject</option>
+                                <option vaue="location">location</option>
+                                <option value="price">price</option>
+                                <option value="availableInventory">Spaces</option>
+                            </select>
+                        </label>
+                        <label>
+                            <button 
+                            @click="toggleSortOrder" 
+                            :title="sortDescending ? 'Press to sort Ascending' : 'Press to sort Descending'">
+                            Sort: {{ sortDescending ? 'Descending' : 'Ascending' }}
+                            </button>
+                        </label>
+                    </div>
+
+                    <input type="text" v-model="searchQuery" placeholder="Search for lessons..." />
+
+                    <div v-for="lesson in sortedProducts" :key="lesson.id" class="lesson-card">
                         <figure>
                             <img v-bind:src="lesson.image" alt="Lesson Image">
                         </figure>
-                        <h2 v-text="lesson.title"></h2>
-                        <p v-text="lesson.description"></p>
+                        <h2> {{ lesson.title }}</h2>
+                        <p> {{ lesson.description }}</p>
                         <p>Location: {{ lesson.location }}</p>
                         <p>Price: ${{ lesson.price }}</p>
+                        <p>Available spaces: {{ lesson.availableInventory }}</p>
+
+                        <span>{{ availabilityMessage(lesson) }}</span>
+
+                        <div>
+                            <span v-for="n in lesson.rating" :key="n">★</span>
+                            <span v-for="n in 5 - lesson.rating" :key="5 + n">☆</span>
+                        </div>
+
                         <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)">Add to cart</button>
                         <button disabled v-else>Add to cart</button>
                     </div>
@@ -46,42 +76,31 @@
                     <p>Total: ${{ cartTotal }}</p>
 
                     <form @submit.prevent="submitForm">
-                    <p><strong>First Name:</Strong> <input v-model.trim="order.firstName" required
-                        pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{1,50}$"
-                        title="Please enter a valid first name (letters only, up to 50 characters)"/>
-                    </p>
-                    <p><strong>Last Name:</strong> <input v-model.trim="order.lastname" required
-                        pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{1,50}$"
-                        title="Please enter a valid first name (letters only, up to 50 characters)"/>
-                    </p>
-                    <p><strong>Email:</strong> 
-                        <input v-model.trim="order.email" type="email" required
-                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                        title="Please enter a valid email address (e.g., user@example.com)"/>
-                     </p>
-                    <p><strong>Address:</strong> <input v-model="order.address" required
-                        pattern="^[A-Za-z0-9À-ÖØ-öø-ÿ\s,.'-]{5,100}$"
-                        title="Please enter a valid address (letters, numbers, commas, and periods allowed, between 5 and 100 characters)"/>
-                    </p>
-                    <p><strong>City:</strong> <input v-model="order.city" required
-                        pattern="^[A-Za-z0-9À-ÖØ-öø-ÿ\s,.'-]{5,100}$"
-                        title="Please enter a valid address (letters, numbers, commas, and periods allowed, between 5 and 100 characters)"/>
-                    </p>
-                    <p><strong>Postcode:</strong> 
-                        <input v-model.trim="order.postcode" type="text" required
-                        pattern="^([A-Za-z]{1,2}\d{1,2}[A-Za-z]?)\s?(\d[A-Za-z]{2})$"
-                        title="Please enter a valid UK postcode (e.g., SW1A 1AA)"/>
-                     </p>
-                    <p><strong>Phone Number:</strong> 
-                        <input v-model="order.phone" type="tel" required
-                        pattern="^(\+44\s?7\d{3}|\(?0\)?7\d{3})\s?\d{3}\s?\d{3}$"
-                        title="Please enter a valid UK phone number (e.g., 07123 456 789 or +44 7123 456 789)" />
-                    </p>
-                    <p><input type="checkbox" id="gift" v-model="order.gift"/>
-                     <label for="gift">{{ order.gift ? 'Send as a gift' : 'Don\'t send as a gift' }}</label>
-                    </p>
-
-                    <button type="submit">Place order</button>
+                        <p><strong>First Name:</strong> <input v-model.trim="order.firstName" required />
+                            <span v-if="!isValidFirstName" class="error">Name must be letters only, up to 50 characters.</span>
+                        </p>
+                        <p><strong>Last Name:</strong> <input v-model.trim="order.lastName" required />
+                            <span v-if="!isValidLastName" class="error">Last name must be letters only, up to 50 characters.</span>
+                        </p>
+                        <p><strong>Email:</strong> 
+                            <input v-model.trim="order.email" type="email" required />
+                            <span v-if="!isValidEmail" class="error">Please enter a valid email address.</span>
+                        </p>
+                        <p><strong>Address:</strong> <input v-model="order.address" required />
+                            <span v-if="!isValidAddress" class="error">Address must be between 1 and 100 characters.</span>
+                        </p>
+                        <p><strong>City:</strong> <input v-model="order.city" required />
+                            <span v-if="!isValidCity" class="error">City must be between 1 and 100 characters.</span>
+                        </p>
+                        <p><strong>Postcode:</strong> 
+                            <input v-model.trim="order.postcode" type="text" required />
+                            <span v-if="!isValidPostcode" class="error">Please enter a valid UK postcode (e.g., SW1A 1AA).</span>
+                        </p>
+                        <p><strong>Phone Number:</strong> 
+                            <input v-model="order.phone" type="tel" required />
+                            <span v-if="!isValidPhone" class="error">Please enter a valid UK phone number.</span>
+                        </p>
+                        <button type="submit" :disabled="!isCheckoutButtonEnabled">Place order</button>
                     </form>
 
                     <button @click="showCheckout">Back to Product</button>
