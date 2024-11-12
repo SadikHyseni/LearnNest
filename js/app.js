@@ -109,14 +109,27 @@ var app = new Vue({
         order: {
             firstName: '',
             lastName: '',
+            email: '',
             address: '',
             city: '',
-            postcode: null, 
+            postcode: '', 
             phone: '',
-            gift: false
         },
         sortAttribute: 'price',
-        sortDescending: false
+        sortDescending: false,
+        checkoutStep: 1,
+        showMessage: false,
+        successMessage: false ,
+        showErros: false,
+        errors: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            address: '',
+            city: '',
+            postcode: '',
+            phone: ''
+        },
     },
     computed: {
         cartItemCount() {
@@ -139,6 +152,9 @@ var app = new Vue({
         isCheckoutButtonEnabled() {
             return this.cart.length > 0 && this.isValidFirstName && this.isValidLastName && this.isValidEmail && this.isValidAddress && this.isValidCity && this.isValidPostcode && this.isValidPhone;
         },
+        isProccedToCheckoutButtonEnabled() {
+            return this.cart.length > 0 ;
+        },
         isValidFirstName() {
             return /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{1,50}$/.test(this.order.firstName);
         },
@@ -159,7 +175,24 @@ var app = new Vue({
         },
         isValidPostcode() {
             return /^([A-Za-z]{1,2}\d{1,2}[A-Za-z]?)\s?(\d[A-Za-z]{2})$/.test(this.order.postcode);
-        }
+        },
+         groupedCart() {
+            const grouped = {};
+      
+            this.cart.forEach((item) => {
+              if (grouped[item.id]) {
+                grouped[item.id].quantity += 1;
+                grouped[item.id].totalPrice += item.price;
+              } else {
+                grouped[item.id] = {
+                  ...item,
+                  quantity: 1,
+                  totalPrice: item.price,
+                };
+              }
+            });
+            return Object.values(grouped);
+          }
     },
     methods: {
         addToCart(lesson) {
@@ -187,28 +220,92 @@ var app = new Vue({
             this.showProduct = !this.showProduct;
         },
         removeFromCart(item) {
-            const index = this.cart.indexOf(item);
-            if (index !== -1) {
-                item.availableInventory += 1;
-                this.cart.splice(index, 1);
+            const itemCountInCart = this.cart.filter((cartItem) => cartItem.id === item.id).length;
+    
+            if (itemCountInCart > 0) {
+                const index = this.cart.findIndex((cartItem) => cartItem.id === item.id);
+                if (index !== -1) {
+                    this.cart.splice(index, 1);
+                }
+                const lessonInInventory = this.lessons.find((lesson) => lesson.id === item.id);
+                if (lessonInInventory) {
+                    lessonInInventory.availableInventory += 1;
+                }
             }
+        },
+        proceedToCheckout() {
+            if (this.cart.length === 0) {
+                this.showMessage = true;
+                setTimeout(() => {
+                    this.showMessage = false;
+                }, 2000);
+                return;
+            } else {
+                this.checkoutStep = 2;
+            }
+        },
+        backToCart() {
+            this.checkoutStep = 1;
         },
         toggleSortOrder() {
             this.sortDescending = !this.sortDescending;
         },
+        validateFields () {
+                this.errors = {
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    address: '',
+                    city: '',
+                    postcode: '',
+                    phone: ''
+                };
+                if (!this.isValidFirstName) {
+                    this.errors.firstName = 'Name must be letters only, up to 50 characters.';
+                }
+                if (!this.isValidLastName) {
+                    this.errors.lastName = 'Last name must be letters only, up to 50 characters.';
+                }
+                if (!this.isValidEmail) {
+                    this.errors.email = 'Please enter a valid email address.';
+                }
+                if (!this.isValidAddress) {
+                    this.errors.address = 'Address must be between 1 and 100 characters.';
+                }
+                if (!this.isValidCity) {
+                    this.errors.city = 'City must be between 1 and 100 characters.';
+                }
+                if (!this.isValidPostcode) {
+                    this.errors.postcode = 'Please enter a valid UK postcode (e.g., SW1A 1AA).';
+                }
+                if (!this.isValidPhone) {
+                    this.errors.phone = 'Please enter a valid UK phone number.';
+                }
+        
+                return Object.values(this.errors).every(error => error === '');
+        },
         submitForm(){
-            alert('Order placed successfully!');
-            this.cart = [];
-            this.order = {
-                firstName: '',
-                lastName: '',
-                address: '',
-                city: '',
-                postcode: null,
-                phone: '',
-                gift: false
-            };
-            this.showProduct = true;
+            this.validateFields(); 
+            if  (Object.values(this.errors).every(error => error === '')) {
+            this.successMessage = true;
+            setTimeout(() => {
+                this.successMessage = false;
+                this.showErros = false;
+                this.showProduct = true;
+                this.checkoutStep = 1;
+                this.cart = [];
+                this.order = {
+                    firstName: '',
+                    lastName: '',
+                    address: '',
+                    city: '',
+                    postcode: '',
+                    phone: ''
+                };
+            }, 6000);
+        }else {
+          this.showErros = true;
         }
+    }
     }
 });

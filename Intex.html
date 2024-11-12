@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <title>LearnNest</title>
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <link rel="stylesheet" href="css/Styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     </head>
     
     <body>
         <div id="app">
-            <header>
-                <h1 v-text="appName"></h1>
-                <button @click="showCheckout" :disabled="!isCartButtonDisabled">
+            
+            <header class="header">
+                <h1 class="header-title">
+                    <img src="images/logo.png" alt="Logo" class="logo">
+                    {{ appName }}
+                </h1>
+                <button class="checkout-button" @click="showCheckout" :disabled="!isCartButtonDisabled">
                     {{ cartItemCount }}
                     <span class="fas fa-cart-plus"></span> Checkout
                 </button>
@@ -20,10 +25,22 @@
 
             <main>
                 <div v-if="showProduct">
-                    <p>Welcome to LearnNest!</p>
+
+                    <div class="welcome-section">
+                        <div class="welcome-content">
+                          <img src="images/logo.png" alt="LearnNest Logo" class="logo" />
+                          <div class="welcome-text">
+                            <h1>Welcome to LearnNest!</h1>
+                            <p class="intro-text">Explore engaging after-school classes that fit every interest, schedule, and budget.</p>
+                          </div>
+                        </div>
+                      </div>
+
+
                     
-                    <div>
-                        <label>Sort by:
+                    <div class="sort-controls">
+                        <div class="sort-box">
+                        <label>Sort by: 
                             <select v-model="sortAttribute">
                                 <option value="title">Subject</option>
                                 <option vaue="location">location</option>
@@ -31,6 +48,8 @@
                                 <option value="availableInventory">Spaces</option>
                             </select>
                         </label>
+                        </div>
+                        <div class="assortment-box">
                         <label>
                             <button 
                             @click="toggleSortOrder" 
@@ -38,72 +57,103 @@
                             Sort: {{ sortDescending ? 'Descending' : 'Ascending' }}
                             </button>
                         </label>
-                    </div>
-
-                    <input type="text" v-model="searchQuery" placeholder="Search for lessons..." />
-
-                    <div v-for="lesson in sortedProducts" :key="lesson.id" class="lesson-card">
-                        <figure>
-                            <img v-bind:src="lesson.image" alt="Lesson Image">
-                        </figure>
-                        <h2> {{ lesson.title }}</h2>
-                        <p> {{ lesson.description }}</p>
-                        <p>Location: {{ lesson.location }}</p>
-                        <p>Price: ${{ lesson.price }}</p>
-                        <p>Available spaces: {{ lesson.availableInventory }}</p>
-
-                        <span>{{ availabilityMessage(lesson) }}</span>
-
-                        <div>
-                            <span v-for="n in lesson.rating" :key="n">★</span>
-                            <span v-for="n in 5 - lesson.rating" :key="5 + n">☆</span>
                         </div>
-
-                        <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)">Add to cart</button>
-                        <button disabled v-else>Add to cart</button>
+                        <div class="search-bar">
+                            <input type="search" name="search" v-model="searchQuery" placeholder="What are you looking to learn today?" required />
+                            <button class="search-btn" type="button">
+                               <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                     </div>
+
+                <div v-for="lesson in sortedProducts" :key="lesson.id" class="lesson-card">
+                    <figure class="lesson-image">
+                        <img v-bind:src="lesson.image" alt="Lesson Image">
+                    </figure>
+
+                    <div class="lesson-content">
+                        <h2 class="lesson-title">{{ lesson.title }}</h2>
+                        <p class="lesson-description">{{ lesson.description }}</p>
+                    </div>
+                
+                    <div class="lesson-details">
+                        <p class="lesson-location">Location: {{ lesson.location }}</p>
+                        <p class="lesson-price">Price: ${{ lesson.price }}</p>
+                        <p class="lesson-availability">Available spaces: {{ lesson.availableInventory }}</p>
+                        <span class="availability-message">{{ availabilityMessage(lesson) }}</span>
+                    </div>
+            
+                    <div class="lesson-rating">
+                        <span v-for="n in lesson.rating" :key="n" class="star-full">★</span>
+                        <span v-for="n in 5 - lesson.rating" :key="5 + n" class="star-empty">☆</span>
+                    </div>
+                
+                    <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)" class="add-to-cart-button">Add to cart</button>
+                    <button disabled v-else class="add-to-cart-button disabled">Add to cart</button>
+                </div>
                 </div>
     
-                <div v-else>
-                    <h2>Checkout</h2>
+                <div v-else class="checkout-section">
+
+                    <div v-if="checkoutStep === 1">
+                    <h2>Shopping Cart</h2>
                     <p>Items in your cart:</p>
                     <ul>
-                        <li v-for="item in cart" :key="item.id">
-                            {{ item.title }} - ${{ item.price }}
-                            <button @click="removeFromCart(item)">Remove</button>
+                        <li v-for="item in groupedCart" :key="item.id">
+                          {{ item.title }} - ${{ item.totalPrice }} ({{ item.quantity }}x)
+                          <button @click="removeFromCart(item)"  class="remove-item-button">Remove</button>
                         </li>
-                    </ul>
-                    <p>Total: ${{ cartTotal }}</p>
+                      </ul>
 
+                    <p>Total: ${{ cartTotal }}</p>
+                    <div class="button-container">
+                    <button @click="showCheckout" class="back-to-product-button">Back to Product</button>
+                    <button @click="proceedToCheckout"  class="proceed-to-checkout-button">Procced to Checkout</button>
+                    <p v-if="showMessage"  class="message">
+                        Please add at least one lesson to your cart.
+                    </p>
+                </div> 
+                    </div>
+
+                    <div v-else-if="checkoutStep === 2">
+                        <h2>Checkout</h2>
                     <form @submit.prevent="submitForm">
-                        <p><strong>First Name:</strong> <input v-model.trim="order.firstName" required />
-                            <span v-if="!isValidFirstName" class="error">Name must be letters only, up to 50 characters.</span>
+                        <p><strong>First Name:</strong> <input v-model.trim="order.firstName" type="text"   required />
+                            <span v-if="showErrors && errors.firstName" class="error">{{ errors.firstName }}</span>
                         </p>
-                        <p><strong>Last Name:</strong> <input v-model.trim="order.lastName" required />
-                            <span v-if="!isValidLastName" class="error">Last name must be letters only, up to 50 characters.</span>
+                        <p><strong>Last Name:</strong> <input v-model.trim="order.lastName" type="text"required />
+                            <span v-if="showErrors && errors.lastName" class="error">{{ errors.lastName }}</span>
                         </p>
                         <p><strong>Email:</strong> 
-                            <input v-model.trim="order.email" type="email" required />
-                            <span v-if="!isValidEmail" class="error">Please enter a valid email address.</span>
+                            <input v-model.trim="order.email" type="email"  required />
+                            <span v-if="showErrors && errors.email" class="error">{{ errors.email }}</span>
+
                         </p>
-                        <p><strong>Address:</strong> <input v-model="order.address" required />
-                            <span v-if="!isValidAddress" class="error">Address must be between 1 and 100 characters.</span>
+                        <p><strong>Address:</strong> <input v-model="order.address" type="text"  required />
+                            <span v-if="showErrors && errors.address" class="error">{{ errors.address }}</span>
                         </p>
-                        <p><strong>City:</strong> <input v-model="order.city" required />
-                            <span v-if="!isValidCity" class="error">City must be between 1 and 100 characters.</span>
+                        <p><strong>City:</strong> <input v-model="order.city"  type="text" required />
+                            <span v-if="showErrors && errors.city" class="error">{{ errors.city }}</span>
                         </p>
                         <p><strong>Postcode:</strong> 
                             <input v-model.trim="order.postcode" type="text" required />
-                            <span v-if="!isValidPostcode" class="error">Please enter a valid UK postcode (e.g., SW1A 1AA).</span>
+                            <span v-if="showErrors && errors.postcode" class="error">{{ errors.postcode }}</span>
                         </p>
                         <p><strong>Phone Number:</strong> 
-                            <input v-model="order.phone" type="tel" required />
-                            <span v-if="!isValidPhone" class="error">Please enter a valid UK phone number.</span>
+                            <input v-model="order.phone" type="tel"   required />
+                            <span v-if="showErrors && errors.phone" class="error">{{ errors.phone }}</span>
                         </p>
-                        <button type="submit" :disabled="!isCheckoutButtonEnabled">Place order</button>
+                        <div class="button-checkout-container">
+                        <button @click="backToCart" class="back-to-cart-button">Back to Cart</button>
+                        <button type="submit" class="placeorder-button">Place order</button>
+                        </div>
+                        <div v-if="successMessage" class="success-message">
+                            <img src="images/logo.png" alt="Logo" class="success-logo">
+                            Order placed successfully!
+                        </div>
                     </form>
 
-                    <button @click="showCheckout">Back to Product</button>
+                </div>
                 </div>
             </main>
         </div>
