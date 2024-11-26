@@ -324,7 +324,7 @@ var app = new Vue({
           };
       
           //submit the order
-          fetch("http://http://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/orders", {
+          fetch("http://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(order),
