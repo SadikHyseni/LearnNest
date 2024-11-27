@@ -13,7 +13,7 @@
             
             <header class="header">
                 <h1 class="header-title">
-                    <img src="images/logo.png" alt="Logo" class="logo">
+                    <img src="/images/logo.png" alt="Logo" class="logo">
                     {{ appName }}
                 </h1>
                 <button class="checkout-button" @click="showCheckout" :disabled="!isCartButtonDisabled">
@@ -28,7 +28,7 @@
 
                     <div class="welcome-section">
                         <div class="welcome-content">
-                          <img src="images/logo.png" alt="LearnNest Logo" class="logo" />
+                          <img src="/images/logo.png" alt="LearnNest Logo" class="logo" />
                           <div class="welcome-text">
                             <h1>Welcome to LearnNest!</h1>
                             <p class="intro-text">Explore engaging after-school classes that fit every interest, schedule, and budget.</p>
@@ -66,6 +66,7 @@
                         </div>
                     </div>
 
+                    <div v-if="filteredAndSortedProducts.length">
                     <div v-for="lesson in filteredAndSortedProducts" :key="lesson._id" class="lesson-card">
                     <figure class="lesson-image">
                         <img v-bind:src="lesson.image" alt="Lesson Image">
@@ -95,6 +96,8 @@
                     <button disabled v-else class="add-to-cart-button disabled">Add to cart</button>
                 </div>
                 </div>
+                <p v-else>No lessons found matching your search.</p>
+            </div>
     
                 <div v-else class="checkout-section">
 
@@ -151,7 +154,7 @@
                         <button type="submit" class="placeorder-button">Place order</button>
                         </div>
                         <div v-if="successMessage" class="success-message">
-                            <img src="images/logo.png" alt="Logo" class="success-logo">
+                            <img src="/images/logo.png" alt="Logo" class="success-logo">
                             Order placed successfully!
                         </div>
                     </form>

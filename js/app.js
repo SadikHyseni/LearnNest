@@ -160,18 +160,23 @@ var app = new Vue({
     },
     methods: {
       fetchLessons() {
-          console.log("Calling backend API...");
+          console.log("Fetching lessons from backend...");
           fetch("https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons")
               .then((response) => {
                   console.log("Response status:", response.status);
                   if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
+                      throw new Error(`HTTPS error! status: ${response.status}`);
                   }
                   return response.json();
               })
               .then((data) => {
                   console.log("Fetched lessons:", data);
-                  this.lessons = data;
+                  this.lessons = data.map((lesson) => ({
+                    ...lesson,
+                    image: lesson.image.startsWith("/images")
+                      ? `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`
+                      : "/images/default.jpg", // Fallback to default image
+                  }));
                   console.log("Updated lessons data:", this.lessons);
               })
               .catch((error) => {
@@ -205,27 +210,15 @@ var app = new Vue({
       },
       performSearch() {
         if (!this.searchQuery.trim()) {
+          this.fetchLessons();
           return;
         }
-        console.log(`Performing search for: ${this.searchQuery}`);
-        // Filter lessons based on the query and update the lessons array
-        const filteredLessons = this.lessons.filter(
-          (lesson) =>
-            lesson.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            lesson.location
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase()) ||
-            lesson.description
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
-        );
-  
-        // If no results are found, display an appropriate message
-        if (filteredLessons.length === 0) {
-          console.warn("No results found for your search.");
-        }
-        //dislay lessons
-        this.lessons = filteredLessons;
+        fetch(`https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/search?q=${encodeURIComponent(this.searchQuery)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            this.lessons = data;
+          })
+          .catch((error) => console.error("Error performing search:", error));
       },
       canAddToCart(lesson) {
         return lesson.availableInventory > 0;
@@ -370,12 +363,10 @@ var app = new Vue({
       }
     },
     watch: {
-      searchQuery(newValue) {
-          if (!newValue.trim()) {
-              this.fetchLessons();
-          }
-      }
-  },
+      searchQuery() {
+        this.performSearch();
+      },
+    },
   mounted() {
       console.log("Mounted hook called");
        this.fetchLessons();
