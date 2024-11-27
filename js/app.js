@@ -173,9 +173,7 @@ var app = new Vue({
                   console.log("Fetched lessons:", data);
                   this.lessons = data.map((lesson) => ({
                     ...lesson,
-                    image: lesson.image.startsWith("/images")
-                      ? `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`
-                      : "/images/default.jpg", // Fallback to default image
+                    image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/images/${lesson.image || "default.png"}`,
                   }));
                   console.log("Updated lessons data:", this.lessons);
               })
