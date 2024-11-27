@@ -161,7 +161,7 @@ var app = new Vue({
     methods: {
       fetchLessons() {
           console.log("Calling backend API...");
-          fetch("http://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons")
+          fetch("https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons")
               .then((response) => {
                   console.log("Response status:", response.status);
                   if (!response.ok) {
@@ -185,7 +185,7 @@ var app = new Vue({
         }
       },
       updateLesson(id, newAvailability) {
-        fetch(`http://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons/${id}`, {
+        fetch(`https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ availableInventory: newAvailability }),
@@ -324,7 +324,7 @@ var app = new Vue({
           };
       
           //submit the order
-          fetch("http://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/orders", {
+          fetch("https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(order),
