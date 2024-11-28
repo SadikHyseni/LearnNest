@@ -86,16 +86,6 @@ var app = new Vue({
             return 0;
           });
         },
-      sortedProducts() {
-        let sorted = this.lessons.slice().sort((a, b) => {
-          if (a[this.sortAttribute] < b[this.sortAttribute])
-            return this.sortDescending ? 1 : -1;
-          if (a[this.sortAttribute] > b[this.sortAttribute])
-            return this.sortDescending ? -1 : 1;
-          return 0;
-        });
-        return sorted;
-      },
       isCartButtonDisabled() {
         return this.cart.length > 0;
       },
@@ -173,8 +163,8 @@ var app = new Vue({
                   console.log("Fetched lessons:", data);
                   this.lessons = data.map((lesson) => ({
                     ...lesson,
-                    image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/images/${lesson.image || "default.png"}`,
-                  }));
+                    image: lesson.image, 
+                }));
                   console.log("Updated lessons data:", this.lessons);
               })
               .catch((error) => {
@@ -214,7 +204,10 @@ var app = new Vue({
         fetch(`https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/search?q=${encodeURIComponent(this.searchQuery)}`)
           .then((response) => response.json())
           .then((data) => {
-            this.lessons = data;
+            this.lessons = data.map((lesson) => ({
+              ...lesson,
+              image: lesson.image,
+            }));
           })
           .catch((error) => console.error("Error performing search:", error));
       },
@@ -239,10 +232,10 @@ var app = new Vue({
       removeFromCart(item) {
         const index = this.cart.findIndex(cartItem => cartItem._id === item._id);
         if (index !== -1) {
-          this.cart.splice(index, 1); // Remove item from cart
+          this.cart.splice(index, 1);
           const lessonInInventory = this.lessons.find(lesson => lesson._id === item._id);
           if (lessonInInventory) {
-            lessonInInventory.availableInventory += 1; // Increment inventory
+            lessonInInventory.availableInventory += 1; 
           }
         }
       },
