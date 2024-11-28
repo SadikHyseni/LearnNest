@@ -66,7 +66,7 @@
                         </div>
                     </div>
 
-                    <div v-if="filteredAndSortedProducts.length">
+           
                     <div v-for="lesson in filteredAndSortedProducts" :key="lesson._id" class="lesson-card">
                     <figure class="lesson-image">
                         <img v-bind:src="lesson.image" alt="Lesson Image">
@@ -96,8 +96,6 @@
                     <button disabled v-else class="add-to-cart-button disabled">Add to cart</button>
                 </div>
                 </div>
-                <p v-else>No lessons found matching your search.</p>
-            </div>
     
                 <div v-else class="checkout-section">
 
