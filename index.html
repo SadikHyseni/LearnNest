@@ -13,7 +13,7 @@
             
             <header class="header">
                 <h1 class="header-title">
-                    <img :src="`/static/logo.png`" alt="Logo" class="logo">
+                    <img src="images/logo.png"   alt="Logo" class="logo">
                     {{ appName }}
                 </h1>
                 <button class="checkout-button" @click="showCheckout" :disabled="!isCartButtonDisabled">
@@ -28,7 +28,7 @@
 
                     <div class="welcome-section">
                         <div class="welcome-content">
-                            <img :src="`/static/logo.png`" alt="LearnNest Logo" class="logo" />
+                            <img src="images/logo.png"  alt="LearnNest Logo" class="logo" />
                           <div class="welcome-text">
                             <h1>Welcome to LearnNest!</h1>
                             <p class="intro-text">Explore engaging after-school classes that fit every interest, schedule, and budget.</p>
@@ -152,7 +152,7 @@
                         <button type="submit" class="placeorder-button">Place order</button>
                         </div>
                         <div v-if="successMessage" class="success-message">
-                            <img :src="`/static/logo.png`" alt="Logo" class="success-logo">
+                            <img src="images/logo.png" alt="Logo" class="success-logo">
                             Order placed successfully!
                         </div>
                     </form>
