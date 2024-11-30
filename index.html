@@ -122,30 +122,30 @@
                     <div v-else-if="checkoutStep === 2">
                         <h2>Checkout</h2>
                     <form @submit.prevent="submitForm">
-                        <p><strong>First Name:</strong> <input v-model.trim="order.firstName" type="text"   required />
-                            <span v-if="showErrors && errors.firstName" class="error">{{ errors.firstName }}</span>
+                        <p><strong>First Name:</strong> <input v-model.trim="order.firstName" type="text" required  @input="validateFields('firstName')"/>
+                            <span v-if="errors.firstName" class="error">{{ errors.firstName }}</span>
                         </p>
-                        <p><strong>Last Name:</strong> <input v-model.trim="order.lastName" type="text"required />
-                            <span v-if="showErrors && errors.lastName" class="error">{{ errors.lastName }}</span>
+                        <p><strong>Last Name:</strong> <input v-model.trim="order.lastName" type="text"required  @input="validateFields('lastName')"/>
+                            <span v-if=" errors.lastName" class="error">{{ errors.lastName }}</span>
                         </p>
                         <p><strong>Email:</strong> 
-                            <input v-model.trim="order.email" type="email"  required />
-                            <span v-if="showErrors && errors.email" class="error">{{ errors.email }}</span>
+                            <input v-model.trim="order.email" type="email"  required  @input="validateFields('email')"/>
+                            <span v-if="errors.email" class="error">{{ errors.email }}</span>
 
                         </p>
-                        <p><strong>Address:</strong> <input v-model="order.address" type="text"  required />
-                            <span v-if="showErrors && errors.address" class="error">{{ errors.address }}</span>
+                        <p><strong>Address:</strong> <input v-model="order.address" type="text"  required @input="validateFields('address')"/>
+                            <span v-if="errors.address" class="error">{{ errors.address }}</span>
                         </p>
-                        <p><strong>City:</strong> <input v-model="order.city"  type="text" required />
-                            <span v-if="showErrors && errors.city" class="error">{{ errors.city }}</span>
+                        <p><strong>City:</strong> <input v-model="order.city"  type="text" required @input="validateFields('city')"/>
+                            <span v-if="errors.city" class="error">{{ errors.city }}</span>
                         </p>
                         <p><strong>Postcode:</strong> 
-                            <input v-model.trim="order.postcode" type="text" required />
-                            <span v-if="showErrors && errors.postcode" class="error">{{ errors.postcode }}</span>
+                            <input v-model.trim="order.postcode" type="text" required @input="validateFields('postcode')"/>
+                            <span v-if="errors.postcode" class="error">{{ errors.postcode }}</span>
                         </p>
                         <p><strong>Phone Number:</strong> 
-                            <input v-model="order.phone" type="tel"   required />
-                            <span v-if="showErrors && errors.phone" class="error">{{ errors.phone }}</span>
+                            <input v-model="order.phone" type="tel"   required  @input="validateFields('phone')"/>
+                            <span v-if="errors.phone" class="error">{{ errors.phone }}</span>
                         </p>
                         <div class="button-checkout-container">
                         <button @click="backToCart" class="back-to-cart-button">Back to Cart</button>

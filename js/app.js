@@ -269,42 +269,46 @@ var app = new Vue({
       toggleSortOrder() {
         this.sortDescending = !this.sortDescending;
       },
-      validateFields() {
-        this.errors = {
-          firstName: "",
-          lastName: "",
-          email: "",
-          address: "",
-          city: "",
-          postcode: "",
-          phone: "",
-        };
-        if (!this.isValidFirstName) {
-          this.errors.firstName =
-            "Name must be letters only, up to 50 characters.";
+      validateFields(fieldName = null) {
+        if (fieldName === null || fieldName === "firstName") {
+            this.errors.firstName = this.isValidFirstName
+                ? ""
+                : "Name must be letters only.";
         }
-        if (!this.isValidLastName) {
-          this.errors.lastName =
-            "Last name must be letters only, up to 50 characters.";
+        if (fieldName === null || fieldName === "lastName") {
+            this.errors.lastName = this.isValidLastName
+                ? ""
+                : "Last name must be letters only.";
         }
-        if (!this.isValidEmail) {
-          this.errors.email = "Please enter a valid email address.";
+        if (fieldName === null || fieldName === "email") {
+            this.errors.email = this.isValidEmail
+                ? ""
+                : "Please enter a valid email.";
         }
-        if (!this.isValidAddress) {
-          this.errors.address = "Address must be between 1 and 100 characters.";
+        if (fieldName === null || fieldName === "address") {
+            this.errors.address = this.isValidAddress
+                ? ""
+                : "Address is required.";
         }
-        if (!this.isValidCity) {
-          this.errors.city = "City must be between 1 and 100 characters.";
+        if (fieldName === null || fieldName === "city") {
+            this.errors.city = this.isValidCity
+                ? ""
+                : "City is required.";
         }
-        if (!this.isValidPostcode) {
-          this.errors.postcode =
-            "Please enter a valid UK postcode (e.g., SW1A 1AA).";
+        if (fieldName === null || fieldName === "postcode") {
+            this.errors.postcode = this.isValidPostcode
+                ? ""
+                : "Invalid postcode format.";
         }
-        if (!this.isValidPhone) {
-          this.errors.phone = "Please enter a valid UK phone number.";
+        if (fieldName === null || fieldName === "phone") {
+            this.errors.phone = this.isValidPhone
+                ? ""
+                : "Invalid phone number format.";
         }
-        return Object.values(this.errors).every((error) => error === "");
-      },
+    
+        // Update `showErrors` based on any error present
+        this.showErrors = Object.values(this.errors).some((error) => error !== "");
+    },
       submitForm() {
         this.validateFields();
       
