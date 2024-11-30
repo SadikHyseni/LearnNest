@@ -152,9 +152,8 @@
                         <button 
                         type="submit" 
                         class="placeorder-button" 
-                        :class="{'button-placeorder-enabled': isCheckoutButtonEnabled, 'button-placeorder-disabled': !isCheckoutButtonEnabled}" 
-                        :disabled="!isCheckoutButtonEnabled" 
-                        v-if="isCheckoutButtonEnabled">
+                        :class="{ 'button-placeorder-disabled': !isCheckoutButtonEnabled }" 
+                        :disabled="!isCheckoutButtonEnabled">
                         Place order
                         </button>
                         </div>
