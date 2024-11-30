@@ -553,7 +553,7 @@ main {
     font-size: 1em;
     font-weight: bold;
     background-color: #27ae60;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -565,21 +565,13 @@ main {
   }
   
   .placeorder-button:disabled {
-    background-color: #bdc3c7;
     cursor: not-allowed;
-    color: #666666;
   }
-
-
-/* Enabled state */
-.button-placeorder-enabled {
-    background-color: #4caf50; /* Green */
-}
 
 /* Disabled state */
 .button-placeorder-disabled {
-    background-color: #cccccc; /* Grey */
-    color: #666666;
+    background-color: #bdc3c7; 
+    color: #666666; 
     cursor: not-allowed;
 }
 
