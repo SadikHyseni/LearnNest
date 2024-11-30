@@ -172,9 +172,10 @@ var app = new Vue({
               })
               .then((data) => {
                   console.log("Fetched lessons:", data);
-                    this.lessons = data.map((lesson) => ({
-                    ...lesson
-                  }));
+                  this.lessons = data.map((lesson) => ({
+                    ...lesson,
+                    image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`
+                }));
                   console.log("Updated lessons data:", this.lessons);
               })
               .catch((error) => {
@@ -215,7 +216,8 @@ var app = new Vue({
           .then((response) => response.json())
           .then((data) => {
             this.lessons = data.map((lesson) => ({
-              ...lesson
+              ...lesson,
+              image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`
             }));
           })
           .catch((error) => console.error("Error performing search:", error));
