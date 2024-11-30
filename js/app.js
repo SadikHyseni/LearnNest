@@ -162,7 +162,9 @@ var app = new Vue({
     methods: {
       fetchLessons() {
           console.log("Fetching lessons from backend...");
-          fetch("https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons")
+          fetch("https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com/lessons", {
+            method: "GET",
+          })
               .then((response) => {
                   console.log("Response status:", response.status);
                   if (!response.ok) {

@@ -465,8 +465,6 @@ main {
     background-color: #fb0000; 
   }
 
-
-
   /* checkout section */
   .checkout-section .error {
     color: #e74c3c; 
@@ -549,18 +547,17 @@ main {
     margin-top: 1.5rem;
   }
 
-  .placeorder-button{
+  .placeorder-button {
     width: 400px;
     padding: 10px;
     font-size: 1em;
     font-weight: bold;
-    background-color: #27ae60; 
-    color: #ffffff;
+    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
-
+    transition: background-color 0.3s ease;
+}
 
   .placeorder-button:hover {
     background-color: #229954; 
@@ -570,6 +567,19 @@ main {
     background-color: #bdc3c7;
     cursor: not-allowed;
   }
+
+
+/* Enabled state */
+.button-placeorder-enabled {
+    background-color: #4caf50; /* Green */
+}
+
+/* Disabled state */
+.button-placeorder-disabled {
+    background-color: #cccccc; /* Grey */
+    color: #666666;
+    cursor: not-allowed;
+}
 
   .back-to-cart-button{
     background-color: #2762f3;

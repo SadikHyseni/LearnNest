@@ -149,7 +149,14 @@
                         </p>
                         <div class="button-checkout-container">
                         <button @click="backToCart" class="back-to-cart-button">Back to Cart</button>
-                        <button type="submit" class="placeorder-button">Place order</button>
+                        <button 
+                        type="submit" 
+                        class="placeorder-button" 
+                        :class="{'button-placeorder-enabled': isCheckoutButtonEnabled, 'button-placeorder-disabled': !isCheckoutButtonEnabled}" 
+                        :disabled="!isCheckoutButtonEnabled" 
+                        v-if="isCheckoutButtonEnabled">
+                        Place order
+                        </button>
                         </div>
                         <div v-if="successMessage" class="success-message">
                             <img src="images/logo.png" alt="Logo" class="success-logo">
