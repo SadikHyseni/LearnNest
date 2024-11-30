@@ -87,27 +87,15 @@ var app = new Vue({
       
         console.log("Filtered products after search query:", filteredProducts);
       
-        // Step 2: Sort the filtered products based on sortAttribute and sortDescending
-        let sortedProducts = filteredProducts.sort((a, b) => {
-          const attributeA = a[this.sortAttribute] !== null && a[this.sortAttribute] !== undefined
-            ? a[this.sortAttribute]
-            : "";
-          const attributeB = b[this.sortAttribute] !== null && b[this.sortAttribute] !== undefined
-            ? b[this.sortAttribute]
-            : "";
+    // Sort the filtered products 
+    return [...filteredProducts].sort((a, b) => {
+      if (a[this.sortAttribute] < b[this.sortAttribute])
+          return this.sortDescending ? 1 : -1;
+      if (a[this.sortAttribute] > b[this.sortAttribute])
+          return this.sortDescending ? -1 : 1;
+      return 0;
+  });
       
-          // Ensure attributes are comparable
-          if (typeof attributeA === "string") attributeA = attributeA.toLowerCase();
-          if (typeof attributeB === "string") attributeB = attributeB.toLowerCase();
-      
-          if (attributeA < attributeB) return this.sortDescending ? 1 : -1;
-          if (attributeA > attributeB) return this.sortDescending ? -1 : 1;
-          return 0;
-        });
-      
-        console.log("Sorted products after attribute sorting:", sortedProducts);
-      
-        return sortedProducts;
       },
       isCartButtonDisabled() {
         return this.cart.length > 0;
