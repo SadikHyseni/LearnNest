@@ -57,35 +57,58 @@ var app = new Vue({
         }, 0); 
       },
       filteredAndSortedProducts() {
-          console.log("Evaluating filteredAndSortedProducts");
-        
-          // Check if lessons array is properly populated
-          if (!Array.isArray(this.lessons)) {
-            console.warn("Lessons data is not an array:", this.lessons);
-            return [];
-          }
-        
-          // Filter based on searchQuery
-          let filteredProducts = this.lessons.filter((lesson) => {
-            // Ensure all properties exist and are strings before calling `toLowerCase()`
-            const title = lesson.title ? lesson.title.toLowerCase() : "";
-            const location = lesson.location ? lesson.location.toLowerCase() : "";
-        
-            return (
-              title.includes(this.searchQuery.toLowerCase()) ||
-              location.includes(this.searchQuery.toLowerCase())
-            );
-          });
-        
-          // Sort the filtered products
-          return filteredProducts.sort((a, b) => {
-            if (a[this.sortAttribute] < b[this.sortAttribute])
-              return this.sortDescending ? 1 : -1;
-            if (a[this.sortAttribute] > b[this.sortAttribute])
-              return this.sortDescending ? -1 : 1;
-            return 0;
-          });
-        },
+        console.log("Evaluating filteredAndSortedProducts");
+      
+        // Check if lessons array is properly populated
+        if (!Array.isArray(this.lessons)) {
+          console.warn("Lessons data is not an array:", this.lessons);
+          return [];
+        }
+      
+        // Step 1: Filter based on searchQuery
+        let filteredProducts = this.lessons.filter((lesson) => {
+          // Ensure all properties exist and are strings before filtering
+          const title = lesson.title ? lesson.title.toLowerCase() : "";
+          const location = lesson.location ? lesson.location.toLowerCase() : "";
+          const description = lesson.description ? lesson.description.toLowerCase() : "";
+          const price = lesson.price ? lesson.price.toString() : "";
+          const availableInventory = lesson.availableInventory
+            ? lesson.availableInventory.toString()
+            : "";
+      
+          return (
+            title.includes(this.searchQuery.toLowerCase()) ||
+            location.includes(this.searchQuery.toLowerCase()) ||
+            description.includes(this.searchQuery.toLowerCase()) ||
+            price.includes(this.searchQuery.toLowerCase()) ||
+            availableInventory.includes(this.searchQuery.toLowerCase())
+          );
+        });
+      
+        console.log("Filtered products after search query:", filteredProducts);
+      
+        // Step 2: Sort the filtered products based on sortAttribute and sortDescending
+        let sortedProducts = filteredProducts.sort((a, b) => {
+          const attributeA = a[this.sortAttribute] !== null && a[this.sortAttribute] !== undefined
+            ? a[this.sortAttribute]
+            : "";
+          const attributeB = b[this.sortAttribute] !== null && b[this.sortAttribute] !== undefined
+            ? b[this.sortAttribute]
+            : "";
+      
+          // Ensure attributes are comparable
+          if (typeof attributeA === "string") attributeA = attributeA.toLowerCase();
+          if (typeof attributeB === "string") attributeB = attributeB.toLowerCase();
+      
+          if (attributeA < attributeB) return this.sortDescending ? 1 : -1;
+          if (attributeA > attributeB) return this.sortDescending ? -1 : 1;
+          return 0;
+        });
+      
+        console.log("Sorted products after attribute sorting:", sortedProducts);
+      
+        return sortedProducts;
+      },
       isCartButtonDisabled() {
         return this.cart.length > 0;
       },
@@ -161,10 +184,9 @@ var app = new Vue({
               })
               .then((data) => {
                   console.log("Fetched lessons:", data);
-                  this.lessons = data.map((lesson) => ({
-                    ...lesson,
-                    image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`,
-                }));
+                    this.lessons = data.map((lesson) => ({
+                    ...lesson
+                  }));
                   console.log("Updated lessons data:", this.lessons);
               })
               .catch((error) => {
@@ -205,8 +227,7 @@ var app = new Vue({
           .then((response) => response.json())
           .then((data) => {
             this.lessons = data.map((lesson) => ({
-              ...lesson,
-              image: `https://awslearnnest-env.eba-csemqgpy.eu-west-2.elasticbeanstalk.com${lesson.image}`,
+              ...lesson
             }));
           })
           .catch((error) => console.error("Error performing search:", error));
@@ -353,11 +374,14 @@ var app = new Vue({
         }
       }
     },
-    watch: {
-      searchQuery() {
-        this.performSearch();
-      },
-    },
+watch: {
+  searchQuery: {
+    immediate: true, // Trigger on initialization
+    handler() {
+      this.performSearch();
+  },
+}
+},
   mounted() {
       console.log("Mounted hook called");
        this.fetchLessons();
