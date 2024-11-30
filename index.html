@@ -92,7 +92,7 @@
                         </span>
                     </div>
                 
-                    <button @click="addToCart(lesson)" v-if="canAddToCart(lesson)" class="add-to-cart-button">Add to cart</button>
+                    <button v-on:click="addToCart(lesson)" v-if="canAddToCart(lesson)" class="add-to-cart-button">Add to cart</button>
                     <button disabled v-else class="add-to-cart-button disabled">Add to cart</button>
                 </div>
                 </div>
